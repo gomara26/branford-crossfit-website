@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Branford CrossFit',
   description: 'Join Branford CrossFit and become part of a community dedicated to helping you achieve your fitness goals.',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 // Configure viewport for better display on mobile devices, especially iPhones
@@ -24,6 +27,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   )
