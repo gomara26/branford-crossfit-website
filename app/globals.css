@@ -80,3 +80,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* iPhone-specific optimizations */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area insets for notched iPhones */
+@supports (padding: max(0px)) {
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top), 1rem);
+  }
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+}
