@@ -12,6 +12,7 @@ import {
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { FaUsers, FaCalendarAlt } from "react-icons/fa";
+import Link from "next/link";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -135,7 +136,7 @@ export default function Home() {
           <div className="hidden md:flex space-x-8">
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Home</a>
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Programs</a>
-            <a href="#" className="hover:text-[#FF8C00] transition-colors">Schedule</a>
+            <Link href="/schedule" className="hover:text-[#FF8C00] transition-colors">Schedule</Link>
             <div className="relative group">
               <a href="/about" className="hover:text-[#FF8C00] transition-colors">
                 About
@@ -173,7 +174,7 @@ export default function Home() {
               <div className="flex flex-col space-y-4">
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Home</a>
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Programs</a>
-                <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Schedule</a>
+                <Link href="/schedule" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Schedule</Link>
                 <div className="space-y-2">
                   <div className="text-white py-2 text-lg">About</div>
                   <div className="pl-4 space-y-2">
@@ -215,16 +216,20 @@ export default function Home() {
             <p className="text-sm sm:text-base md:text-xl mb-4 md:mb-8 text-gray-200">
               Join Branford CrossFit and become part of a community dedicated to helping you achieve your fitness goals.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-              <a 
-                href="#"
-                className="bg-[#FF8C00] text-white px-6 md:px-8 py-2.5 md:py-3 rounded text-center font-semibold hover:bg-[#e67e00] transition-colors text-sm md:text-base min-h-[44px] flex items-center justify-center w-full sm:w-auto"
+            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+              <a
+                href="https://nationathletics.wodify.com/OnlineSalesPortal/ViewSchedule.aspx?IsMobile=True&LocationId=6954&OnlineMembershipId=104579"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 bg-[#FF8C00] text-white font-semibold rounded-lg hover:bg-[#FF8C00]/90 transition-colors duration-300"
               >
                 Free Trial
               </a>
-              <a 
-                href="#"
-                className="border-2 border-[#FF8C00] text-[#FF8C00] px-6 md:px-8 py-2.5 md:py-3 rounded text-center font-semibold hover:bg-[#FF8C00] hover:text-white transition-colors text-sm md:text-base min-h-[44px] flex items-center justify-center w-full sm:w-auto"
+              <a
+                href="https://nationathletics.wodify.com/OnlineSalesPortal/ViewSchedule.aspx?IsMobile=False&LocationId=6954&OnlineMembershipId=104578"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 border-2 border-[#FF8C00] text-[#FF8C00] font-semibold rounded-lg hover:bg-[#FF8C00] hover:text-white transition-all duration-300"
               >
                 Drop In
               </a>

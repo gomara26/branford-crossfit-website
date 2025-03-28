@@ -264,6 +264,131 @@ export default function Community() {
         </motion.div>
       </section>
 
+      {/* Upcoming Events Section */}
+      <section className="py-20 bg-black">
+        <motion.div 
+          className="container mx-auto px-4"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
+          <motion.h2 
+            className="text-4xl sm:text-5xl font-bold mb-8 text-center"
+            variants={itemVariants}
+          >
+            UPCOMING EVENTS
+          </motion.h2>
+          <motion.div
+            className="w-24 h-1 bg-[#FF8C00] mx-auto mb-16"
+            initial={{ width: 0 }}
+            whileInView={{ width: 96 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Community Day Event */}
+            <motion.div 
+              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="aspect-video relative">
+                <Image
+                  src="/images/hockey-event.jpg"
+                  alt="QU Women's Hockey Game"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                <div className="absolute top-4 left-4 bg-[#FF8C00] text-white px-4 py-2 rounded-lg font-bold">
+                  JAN 25
+                </div>
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-4">COMMUNITY DAY: QU WOMEN'S HOCKEY GAME</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">Time:</div>
+                    <div>3PM</div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">Location:</div>
+                    <div>M&T Bank Arena (Hamden, CT)</div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">Cost:</div>
+                    <div>$10</div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">Who:</div>
+                    <div>Members, Family & Friends</div>
+                  </div>
+                </div>
+                <p className="mt-6 text-gray-300">
+                  Join us with Coach AJ, Sammy, and Wrenley to cheer on Amanda & the QU Women's Hockey team as they take on Brown! Following the game we will head over to Haven Beer Company for food & drinks.
+                </p>
+                <div className="mt-6 flex flex-col gap-2">
+                  <div className="text-sm text-gray-400">Sign up with promo code: <span className="text-[#FF8C00] font-medium">BCF</span></div>
+                  <a 
+                    href="https://gobobcats.evenue.net/promotions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center bg-[#FF8C00] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#FF8C00]/90 transition-colors"
+                  >
+                    Register Now
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Member Appreciation Event */}
+            <motion.div 
+              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="aspect-video relative">
+                <Image
+                  src="/images/member-appreciation.jpg"
+                  alt="Member Appreciation"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                <div className="absolute top-4 left-4 bg-[#FF8C00] text-white px-4 py-2 rounded-lg font-bold">
+                  FEB 1-29
+                </div>
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-4">MEMBER APPRECIATION MONTH</h3>
+                <div className="space-y-4 text-gray-300">
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">When:</div>
+                    <div>Entire month of February</div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">Who:</div>
+                    <div>All BCF Members</div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <div className="w-24 font-medium">Location:</div>
+                    <div>Branford CrossFit</div>
+                  </div>
+                </div>
+                <p className="mt-6 text-gray-300">
+                  During the month of January we are showing appreciation to our members by offering a raffle. Any member with an attendance of 16 classes or more will be entered to win this raffle.
+                </p>
+                <div className="mt-6">
+                  <div className="text-[#FF8C00] font-medium">Raffle details coming soon!</div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* Image Gallery Section */}
       <section className="py-20">
         <motion.div 
