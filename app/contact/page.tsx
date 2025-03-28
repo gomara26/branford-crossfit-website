@@ -5,47 +5,42 @@ import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaInstagram, FaFacebook } from "react-icons/fa";
 import { useState } from "react";
+import emailjs from '@emailjs/browser';
+
+// Initialize EmailJS
+emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!);
 
 export default function Contact() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    message: ""
+    fname: '',
+    lname: '',
+    email: '',
+    phone: '',
+    message: ''
   });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const [status, setStatus] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus("loading");
-    setErrorMessage("");
+    setStatus('sending');
 
     try {
-      // Here you would typically send the data to your backend or email service
-      // For now, we'll just simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setStatus("success");
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        message: ""
-      });
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        {
+          from_name: `${formData.fname} ${formData.lname}`,
+          from_email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        }
+      );
+
+      setStatus('success');
+      setFormData({ fname: '', lname: '', email: '', phone: '', message: '' });
     } catch (error) {
-      setStatus("error");
-      setErrorMessage("Failed to send message. Please try again later.");
+      console.error('EmailJS error:', error);
+      setStatus('error');
     }
   };
 
@@ -165,9 +160,9 @@ export default function Contact() {
                 <label className="block text-sm font-medium mb-2">First Name</label>
                 <input
                   type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
+                  name="fname"
+                  value={formData.fname}
+                  onChange={(e) => setFormData({...formData, fname: e.target.value})}
                   required
                   className="w-full bg-black border border-zinc-800 rounded-md px-4 py-2 focus:outline-none focus:border-[#FF8C00]"
                 />
@@ -176,9 +171,9 @@ export default function Contact() {
                 <label className="block text-sm font-medium mb-2">Last Name</label>
                 <input
                   type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
+                  name="lname"
+                  value={formData.lname}
+                  onChange={(e) => setFormData({...formData, lname: e.target.value})}
                   required
                   className="w-full bg-black border border-zinc-800 rounded-md px-4 py-2 focus:outline-none focus:border-[#FF8C00]"
                 />
@@ -190,7 +185,7 @@ export default function Contact() {
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}
                 required
                 className="w-full bg-black border border-zinc-800 rounded-md px-4 py-2 focus:outline-none focus:border-[#FF8C00]"
               />
@@ -201,7 +196,7 @@ export default function Contact() {
                 type="tel"
                 name="phone"
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 required
                 className="w-full bg-black border border-zinc-800 rounded-md px-4 py-2 focus:outline-none focus:border-[#FF8C00]"
               />
@@ -211,26 +206,20 @@ export default function Contact() {
               <textarea
                 name="message"
                 value={formData.message}
-                onChange={handleChange}
+                onChange={(e) => setFormData({...formData, message: e.target.value})}
                 required
                 rows={4}
                 className="w-full bg-black border border-zinc-800 rounded-md px-4 py-2 focus:outline-none focus:border-[#FF8C00]"
               ></textarea>
             </div>
-            {status === "error" && (
-              <p className="text-red-500 text-sm">{errorMessage}</p>
-            )}
-            {status === "success" && (
-              <p className="text-green-500 text-sm">Message sent successfully!</p>
-            )}
             <button
               type="submit"
-              disabled={status === "loading"}
+              disabled={status === 'sending'}
               className={`w-full bg-[#FF8C00] text-black font-bold py-3 px-6 rounded-md hover:bg-[#FF8C00]/90 transition-colors ${
-                status === "loading" ? "opacity-50 cursor-not-allowed" : ""
+                status === 'sending' ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
-              {status === "loading" ? "Sending..." : "Send Message"}
+              {status === 'sending' ? 'Sending...' : 'Send Message'}
             </button>
           </form>
         </motion.div>
