@@ -3,8 +3,18 @@ import { Program } from "./types";
 export const programs: Program[] = [
   {
     title: "CrossFit",
-    description: "Our flagship program combines functional movements performed at high intensity. Each day brings a different workout that includes a mix of cardiovascular conditioning, weightlifting, and gymnastics.",
-    idealFor: ["General fitness enthusiasts", "Those looking for variety", "Anyone wanting community support"],
+    description: "CrossFit is a strength and conditioning program that delivers amazing results through constantly varied, functional movements, executed at high intensity. CrossFit prepares you for life. We train to be generally physically prepared, and we seek to garner a level of fitness readies you for the known and unknown. Simply put, CrossFit will help create the best possible version of you.",
+    idealFor: [
+      "Anyone looking to improve their fitness",
+      "All fitness levels - no experience needed",
+      "Those wanting a supportive community"
+    ],
+    faq: [
+      {
+        question: "Do I have to be Fit to Start?",
+        answer: "NO! The CrossFit program is beautiful because it is scalable to an appropriate level for anyone – literally, anyone. At BCF our coaches take tremendous pride in administering a program that is safe, fun, and effective for everyone… no matter their current level of fitness. So, no – come as you are, but be prepared to leave each day a better version of yourself."
+      }
+    ],
     schedule: "Multiple class times available daily from 5:30am to 7:30pm",
     slug: "crossfit",
     image: "/images/programs/crossfit.jpg"
@@ -27,9 +37,20 @@ export const programs: Program[] = [
   },
   {
     title: "Personal Training",
-    description: "One-on-one coaching tailored to your specific goals, whether it's weight loss, strength gains, or sport-specific training.",
-    idealFor: ["Those wanting individual attention", "Specific goal-oriented training", "Rehabilitation needs"],
-    schedule: "Flexible scheduling available",
+    description: "Private training is a great way to develop a personal relationship with a coach to achieve your goals together. This is great option for those with busy schedules, enjoy a more individualized plan and environment, or want to perfect a certain skill or be introduced to a different training approach (Weightlifting, Running, Sports Specific…)",
+    idealFor: [
+      "Those wanting individualized attention",
+      "Busy professionals with flexible schedules",
+      "Skill-specific development",
+      "In-home training available"
+    ],
+    faq: [
+      {
+        question: "How do I get started?",
+        answer: "Contact us to meet a coach, see the facility, or talk about our programs. If you're already a member, talk to a coach about your goals to get started!"
+      }
+    ],
+    schedule: "Flexible scheduling available - in facility or in-home training",
     slug: "personal-training",
     image: "/images/programs/personal-training.jpg"
   },

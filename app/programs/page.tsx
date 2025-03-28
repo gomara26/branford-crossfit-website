@@ -168,11 +168,22 @@ function FlipCard({ program, index }: { program: any; index: number }) {
 
 export default function Programs() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white pt-20 pb-safe">
       {/* Back Button */}
-      <Link href="/" className="fixed top-4 left-4 text-white/80 hover:text-[#FF8C00] transition-colors z-50">
-        <IoArrowBack size={24} />
-      </Link>
+      <motion.div 
+        className="container mx-auto px-4 mb-8"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Link 
+          href="/"
+          className="inline-flex items-center text-[#FF8C00] hover:text-white transition-colors duration-300 group"
+        >
+          <IoArrowBack className="mr-2 text-xl group-hover:-translate-x-1 transition-transform duration-300" />
+          <span className="text-lg font-medium">Back to Home</span>
+        </Link>
+      </motion.div>
 
       <div className="container mx-auto px-4 py-20">
         {/* Title */}

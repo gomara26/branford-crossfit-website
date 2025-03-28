@@ -1,3 +1,8 @@
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
 export interface Program {
   title: string;
   description: string;
@@ -5,4 +10,5 @@ export interface Program {
   schedule: string;
   slug: string;
   image: string;
+  faq?: FAQ[];
 } 

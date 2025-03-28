@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { FaUsers, FaCalendarAlt } from "react-icons/fa";
 import Link from "next/link";
+import { IoArrowBack } from "react-icons/io5";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -139,9 +140,9 @@ export default function Home() {
             <Link href="/programs" className="hover:text-[#FF8C00] transition-colors">Programs</Link>
             <Link href="/schedule" className="hover:text-[#FF8C00] transition-colors">Schedule</Link>
             <div className="relative group">
-              <a href="/about" className="hover:text-[#FF8C00] transition-colors">
+              <span className="hover:text-[#FF8C00] transition-colors cursor-default">
                 About
-              </a>
+              </span>
               <div className="absolute top-full left-0 hidden group-hover:block w-48 bg-black border border-[#FF8C00]/20 rounded-md shadow-lg">
                 <a href="/community" className="block px-4 py-2 text-white hover:text-[#FF8C00] hover:bg-[#1a1a1a] transition-colors">
                   Community
@@ -327,6 +328,110 @@ export default function Home() {
               <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed">
               We strive to inspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
               </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Additional Programs Section */}
+      <section className="py-16 sm:py-20 bg-black">
+        <div className="container mx-auto px-4">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-12 text-center"
+          >
+            NOT JUST CROSSFIT
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Sports Training */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ scale: 1.02 }}
+              className="relative group overflow-hidden rounded-lg"
+            >
+              <div className="relative h-[400px] w-full">
+                <Image
+                  src="/images/sports-training.jpeg"
+                  alt="Sports Training"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gray-600/70 transition-opacity duration-300" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8">
+                  <h3 className="text-3xl font-bold mb-4">Sports Training</h3>
+                  <Link 
+                    href="/programs" 
+                    className="inline-flex items-center justify-center px-6 py-3 bg-[#FF8C00] text-white font-semibold rounded-lg hover:bg-[#FF8C00]/90 transition-colors w-full sm:w-auto"
+                  >
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Personal Training */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              whileHover={{ scale: 1.02 }}
+              className="relative group overflow-hidden rounded-lg"
+            >
+              <div className="relative h-[400px] w-full">
+                <Image
+                  src="/images/personal-training.jpeg"
+                  alt="Personal Training"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-[#FF8C00]/60 transition-opacity duration-300" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8">
+                  <h3 className="text-3xl font-bold mb-4">Personal Training</h3>
+                  <Link 
+                    href="/programs" 
+                    className="inline-flex items-center justify-center px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-black/80 transition-colors w-full sm:w-auto"
+                  >
+                    Learn More
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Barbell Club */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              whileHover={{ scale: 1.02 }}
+              className="relative group overflow-hidden rounded-lg"
+            >
+              <div className="relative h-[400px] w-full">
+                <Image
+                  src="/images/barbell-club.jpg"
+                  alt="Barbell Club"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gray-600/70 transition-opacity duration-300" />
+                <div className="absolute inset-0 flex flex-col justify-end p-8">
+                  <h3 className="text-3xl font-bold mb-4">Barbell Club</h3>
+                  <Link 
+                    href="/programs" 
+                    className="inline-flex items-center justify-center px-6 py-3 bg-[#FF8C00] text-white font-semibold rounded-lg hover:bg-[#FF8C00]/90 transition-colors w-full sm:w-auto"
+                  >
+                    Learn More
+                  </Link>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
