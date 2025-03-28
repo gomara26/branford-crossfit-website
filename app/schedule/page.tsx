@@ -122,20 +122,28 @@ export default function Schedule() {
           >
             <button
               onClick={() => {
-                const iframe = document.querySelector('iframe');
-                if (iframe) {
-                  if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                  } else {
-                    // Try all possible fullscreen methods
-                    if (iframe.requestFullscreen) {
-                      iframe.requestFullscreen();
-                    } else if ((iframe as any).webkitRequestFullscreen) {
-                      (iframe as any).webkitRequestFullscreen();
-                    } else if ((iframe as any).mozRequestFullScreen) {
-                      (iframe as any).mozRequestFullScreen();
-                    } else if ((iframe as any).msRequestFullscreen) {
-                      (iframe as any).msRequestFullscreen();
+                // Check if it's a mobile device
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                  // Open in new tab for mobile
+                  window.open("https://app.wodify.com/Public/ClassCalendarEntry.aspx?TenantKey=IYy8McVct0&Location_Id=6954&Program_Id=51601,52327,52328,52329,52330,52331,52332,52333,52334,52351,58506,61828,68888,73831,77289&wmode=opaque", "_blank");
+                } else {
+                  // Use fullscreen for desktop
+                  const iframe = document.querySelector('iframe');
+                  if (iframe) {
+                    if (document.fullscreenElement) {
+                      document.exitFullscreen();
+                    } else {
+                      if (iframe.requestFullscreen) {
+                        iframe.requestFullscreen();
+                      } else if ((iframe as any).webkitRequestFullscreen) {
+                        (iframe as any).webkitRequestFullscreen();
+                      } else if ((iframe as any).mozRequestFullScreen) {
+                        (iframe as any).mozRequestFullScreen();
+                      } else if ((iframe as any).msRequestFullscreen) {
+                        (iframe as any).msRequestFullscreen();
+                      }
                     }
                   }
                 }
