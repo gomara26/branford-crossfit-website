@@ -5,8 +5,59 @@ import Image from "next/image";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import { FaUsers, FaCalendarAlt, FaTrophy, FaStar } from "react-icons/fa";
+import { useEffect, useState } from "react";
+
+interface MemberSpotlight {
+  name: string;
+  memberSince: string;
+  quote: string;
+  recentAchievement: string;
+  image: string;
+}
+
+interface UpcomingEvent {
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  cost: string;
+  who: string;
+  description: string;
+  image: string;
+  registrationLink?: string;
+  promoCode?: string;
+}
+
+interface GalleryImage {
+  id: number;
+  src: string;
+  alt: string;
+}
 
 export default function Community() {
+  const [spotlights, setSpotlights] = useState<MemberSpotlight[]>([]);
+  const [events, setEvents] = useState<UpcomingEvent[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // In a real app, this would fetch from your backend
+    const savedSpotlights = localStorage.getItem("memberSpotlights");
+    const savedEvents = localStorage.getItem("upcomingEvents");
+    const savedGalleryImages = localStorage.getItem("galleryImages");
+    
+    if (savedSpotlights) {
+      setSpotlights(JSON.parse(savedSpotlights));
+    }
+    if (savedEvents) {
+      setEvents(JSON.parse(savedEvents));
+    }
+    if (savedGalleryImages) {
+      setGalleryImages(JSON.parse(savedGalleryImages));
+    }
+    setIsLoading(false);
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -165,91 +216,39 @@ export default function Community() {
             transition={{ duration: 0.8 }}
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Sarah J. Card */}
-            <motion.div 
-              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="aspect-square relative">
-                <Image
-                  src="/images/member-sarah.jpg"
-                  alt="Sarah J."
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-2">SARAH J.</h3>
-                <p className="text-[#FF8C00] mb-4">Member since 2019</p>
-                <p className="text-gray-300 mb-6">
-                  "I never thought I could do a pull-up, let alone compete in a CrossFit competition. The coaches and community at Branford CrossFit helped me discover strength I never knew I had."
-                </p>
-                <div className="pt-6 border-t border-[#FF8C00]/20">
-                  <p className="text-sm text-gray-400">Recent achievement:</p>
-                  <p className="text-[#FF8C00]">First muscle-up</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Mike T. Card */}
-            <motion.div 
-              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="aspect-square relative">
-                <Image
-                  src="/images/member-mike.jpg"
-                  alt="Mike T."
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-2">MIKE T.</h3>
-                <p className="text-[#FF8C00] mb-4">Member since 2021</p>
-                <p className="text-gray-300 mb-6">
-                  "After years of traditional gym workouts, I was looking for something more challenging. What I found was not just a better workout, but a community that pushes me to be better every day."
-                </p>
-                <div className="pt-6 border-t border-[#FF8C00]/20">
-                  <p className="text-sm text-gray-400">Recent achievement:</p>
-                  <p className="text-[#FF8C00]">300lb back squat</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Lisa M. Card */}
-            <motion.div 
-              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="aspect-square relative">
-                <Image
-                  src="/images/member-lisa.jpg"
-                  alt="Lisa M."
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-2">LISA M.</h3>
-                <p className="text-[#FF8C00] mb-4">Member since 2018</p>
-                <p className="text-gray-300 mb-6">
-                  "As a mom of three, I needed something that would fit my schedule and give me results. Branford CrossFit has become my second home and the members are like extended family."
-                </p>
-                <div className="pt-6 border-t border-[#FF8C00]/20">
-                  <p className="text-sm text-gray-400">Recent achievement:</p>
-                  <p className="text-[#FF8C00]">Completed first RX competition</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          {isLoading ? (
+            <div className="text-center text-xl">Loading spotlights...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {spotlights.map((spotlight, index) => (
+                <motion.div 
+                  key={index}
+                  className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <div className="aspect-square relative">
+                    <Image
+                      src={spotlight.image || "/images/placeholder.jpg"}
+                      alt={spotlight.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-bold mb-2">{spotlight.name}</h3>
+                    <p className="text-[#FF8C00] mb-4">Member since {spotlight.memberSince}</p>
+                    <p className="text-gray-300 mb-6">{spotlight.quote}</p>
+                    <div className="pt-6 border-t border-[#FF8C00]/20">
+                      <p className="text-sm text-gray-400">Recent achievement:</p>
+                      <p className="text-[#FF8C00]">{spotlight.recentAchievement}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
       </section>
 
@@ -277,103 +276,68 @@ export default function Community() {
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Community Day Event */}
-            <motion.div 
-              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="aspect-video relative">
-                <Image
-                  src="/images/hockey-event.jpg"
-                  alt="QU Women's Hockey Game"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                <div className="absolute top-4 left-4 bg-[#FF8C00] text-white px-4 py-2 rounded-lg font-bold">
-                  JAN 25
-                </div>
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-4">COMMUNITY DAY: QU WOMEN'S HOCKEY GAME</h3>
-                <div className="space-y-4 text-gray-300">
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">Time:</div>
-                    <div>3PM</div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">Location:</div>
-                    <div>M&T Bank Arena (Hamden, CT)</div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">Cost:</div>
-                    <div>$10</div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">Who:</div>
-                    <div>Members, Family & Friends</div>
+            {events.map((event, index) => (
+              <motion.div 
+                key={index}
+                className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
+                variants={itemVariants}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="aspect-video relative">
+                  <Image
+                    src={event.image}
+                    alt={event.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                  <div className="absolute top-4 left-4 bg-[#FF8C00] text-white px-4 py-2 rounded-lg font-bold">
+                    {event.date}
                   </div>
                 </div>
-                <p className="mt-6 text-gray-300">
-                  Join us with Coach AJ, Sammy, and Wrenley to cheer on Amanda & the QU Women's Hockey team as they take on Brown! Following the game we will head over to Haven Beer Company for food & drinks.
-                </p>
-                <div className="mt-6 flex flex-col gap-2">
-                  <div className="text-sm text-gray-400">Sign up with promo code: <span className="text-[#FF8C00] font-medium">BCF</span></div>
-                  <a 
-                    href="https://gobobcats.evenue.net/promotions"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center bg-[#FF8C00] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#FF8C00]/90 transition-colors"
-                  >
-                    Register Now
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Member Appreciation Event */}
-            <motion.div 
-              className="relative bg-[#1a1a1a] rounded-2xl overflow-hidden border border-[#FF8C00]/20 hover:border-[#FF8C00]/40 transition-all duration-300"
-              variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-            >
-              <div className="aspect-video relative">
-                <Image
-                  src="/images/member-appreciation.jpg"
-                  alt="Member Appreciation"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                <div className="absolute top-4 left-4 bg-[#FF8C00] text-white px-4 py-2 rounded-lg font-bold">
-                  FEB 1-29
-                </div>
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-bold mb-4">MEMBER APPRECIATION MONTH</h3>
-                <div className="space-y-4 text-gray-300">
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">When:</div>
-                    <div>Entire month of February</div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold mb-4">{event.title}</h3>
+                  <div className="space-y-4 text-gray-300">
+                    {event.time && (
+                      <div className="flex items-start gap-2">
+                        <div className="w-24 font-medium">Time:</div>
+                        <div>{event.time}</div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-2">
+                      <div className="w-24 font-medium">Location:</div>
+                      <div>{event.location}</div>
+                    </div>
+                    {event.cost && (
+                      <div className="flex items-start gap-2">
+                        <div className="w-24 font-medium">Cost:</div>
+                        <div>{event.cost}</div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-2">
+                      <div className="w-24 font-medium">Who:</div>
+                      <div>{event.who}</div>
+                    </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">Who:</div>
-                    <div>All BCF Members</div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <div className="w-24 font-medium">Location:</div>
-                    <div>Branford CrossFit</div>
-                  </div>
+                  <p className="mt-6 text-gray-300">{event.description}</p>
+                  {event.registrationLink && (
+                    <div className="mt-6 flex flex-col gap-2">
+                      {event.promoCode && (
+                        <div className="text-sm text-gray-400">Sign up with promo code: <span className="text-[#FF8C00] font-medium">{event.promoCode}</span></div>
+                      )}
+                      <a 
+                        href={event.registrationLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center bg-[#FF8C00] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#FF8C00]/90 transition-colors"
+                      >
+                        Register Now
+                      </a>
+                    </div>
+                  )}
                 </div>
-                <p className="mt-6 text-gray-300">
-                  During the month of January we are showing appreciation to our members by offering a raffle. Any member with an attendance of 16 classes or more will be entered to win this raffle.
-                </p>
-                <div className="mt-6">
-                  <div className="text-[#FF8C00] font-medium">Raffle details coming soon!</div>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </section>
@@ -394,17 +358,17 @@ export default function Community() {
             LIFE AT BRANFORD CROSSFIT
           </motion.h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((index) => (
+            {galleryImages.map((image) => (
               <motion.div
-                key={index}
+                key={image.id}
                 className="relative aspect-square rounded-lg overflow-hidden"
                 variants={itemVariants}
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
                 <Image
-                  src={`/images/community${index}.jpg`}
-                  alt={`Community Image ${index}`}
+                  src={image.src}
+                  alt={image.alt}
                   fill
                   className="object-cover"
                 />
