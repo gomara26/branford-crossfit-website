@@ -1,13 +1,22 @@
 "use client";
 
-import { Dumbbell, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Dumbbell, Menu, X, ChevronDown } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const videoRef = useRef(null);
+  const [isVideoVisible, setIsVideoVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,9 +33,60 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleResize);
     
+    // Load YouTube API
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    if (firstScriptTag && firstScriptTag.parentNode) {
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    let player: any;
+    
+    (window as any).onYouTubeIframeAPIReady = () => {
+      player = new (window as any).YT.Player('youtube-player', {
+        videoId: 'YSDDbcfM4uI',
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          modestbranding: 1,
+          rel: 0,
+          showinfo: 0,
+          mute: 0
+        },
+        events: {
+          onReady: (event: any) => {
+            // Video is ready to play
+          }
+        }
+      });
+    };
+
+    // Setup Intersection Observer for video
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsVideoVisible(entry.isIntersecting);
+          if (entry.isIntersecting && player?.playVideo) {
+            player.playVideo();
+          } else if (!entry.isIntersecting && player?.pauseVideo) {
+            player.pauseVideo();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
+      if (videoRef.current) {
+        observer.unobserve(videoRef.current);
+      }
     };
   }, []);
 
@@ -48,7 +108,19 @@ export default function Home() {
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Home</a>
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Programs</a>
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Schedule</a>
-            <a href="#" className="hover:text-[#FF8C00] transition-colors">About</a>
+            <div className="relative group">
+              <a href="/about" className="hover:text-[#FF8C00] transition-colors">
+                About
+              </a>
+              <div className="absolute top-full left-0 hidden group-hover:block w-48 bg-black border border-[#FF8C00]/20 rounded-md shadow-lg">
+                <a href="/about" className="block px-4 py-2 text-white hover:text-[#FF8C00] hover:bg-[#1a1a1a] transition-colors">
+                  Community
+                </a>
+                <a href="/about#coaches" className="block px-4 py-2 text-white hover:text-[#FF8C00] hover:bg-[#1a1a1a] transition-colors">
+                  Coaching
+                </a>
+              </div>
+            </div>
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Contact</a>
           </div>
           <div className="md:hidden">
@@ -74,7 +146,13 @@ export default function Home() {
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Home</a>
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Programs</a>
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Schedule</a>
-                <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">About</a>
+                <div className="space-y-2">
+                  <div className="text-white py-2 text-lg">About</div>
+                  <div className="pl-4 space-y-2">
+                    <a href="/about" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Community</a>
+                    <a href="/about#coaches" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Coaching</a>
+                  </div>
+                </div>
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Contact</a>
               </div>
             </div>
@@ -101,7 +179,7 @@ export default function Home() {
         </div>
         
         <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-[280px] sm:max-w-md md:max-w-lg lg:max-w-2xl">
+          <div className="max-w-[280px] sm:max-w-lg md:max-w-lg lg:max-w-2xl">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-6 leading-tight">
               TRANSFORM YOUR LIFE
               <span className="block text-[#FF8C00]">ONE REP AT A TIME</span>
@@ -112,13 +190,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <a 
                 href="#"
-                className="bg-[#FF8C00] text-white px-6 md:px-8 py-2.5 md:py-3 rounded text-center font-semibold hover:bg-[#e67e00] transition-colors text-sm md:text-base min-h-[44px] flex items-center justify-center"
+                className="bg-[#FF8C00] text-white px-6 md:px-8 py-2.5 md:py-3 rounded text-center font-semibold hover:bg-[#e67e00] transition-colors text-sm md:text-base min-h-[44px] flex items-center justify-center w-full sm:w-auto"
               >
                 Free Trial
               </a>
               <a 
                 href="#"
-                className="border-2 border-[#FF8C00] text-[#FF8C00] px-6 md:px-8 py-2.5 md:py-3 rounded text-center font-semibold hover:bg-[#FF8C00] hover:text-white transition-colors text-sm md:text-base min-h-[44px] flex items-center justify-center"
+                className="border-2 border-[#FF8C00] text-[#FF8C00] px-6 md:px-8 py-2.5 md:py-3 rounded text-center font-semibold hover:bg-[#FF8C00] hover:text-white transition-colors text-sm md:text-base min-h-[44px] flex items-center justify-center w-full sm:w-auto"
               >
                 Drop In
               </a>
@@ -127,22 +205,95 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section with Animations */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-black to-[#1a1a1a]">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-            <div className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-5 sm:p-6 md:p-8 rounded transform hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-5 sm:p-6 md:p-8 rounded transform hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform"
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 md:mb-4 text-[#FF8C00]">Expert Coaching</h3>
               <p className="text-sm sm:text-base text-gray-300">Our certified coaches provide personalized attention to help you achieve your fitness goals safely and effectively.</p>
-            </div>
-            <div className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-5 sm:p-6 md:p-8 rounded transform hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-5 sm:p-6 md:p-8 rounded transform hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform"
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 md:mb-4 text-[#FF8C00]">Community</h3>
               <p className="text-sm sm:text-base text-gray-300">Join a supportive community of like-minded individuals who will motivate and inspire you every step of the way.</p>
-            </div>
-            <div className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-5 sm:p-6 md:p-8 rounded transform hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-5 sm:p-6 md:p-8 rounded transform hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform"
+            >
               <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 md:mb-4 text-[#FF8C00]">Results</h3>
               <p className="text-sm sm:text-base text-gray-300">Whether your goal is strength, endurance, or overall fitness, our proven methods will help you succeed.</p>
-            </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-12 sm:py-16 md:py-20 bg-black">
+        <div className="container mx-auto px-4">
+          <div ref={videoRef} className="relative aspect-video w-full overflow-hidden rounded-lg shadow-lg">
+            <div 
+              id="youtube-player"
+              className="absolute inset-0 w-full h-full"
+            />
+            {!isVideoVisible && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <button 
+                  className="bg-[#FF8C00] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#e67e00] transition-colors"
+                  onClick={() => {
+                    const player = (window as any).player;
+                    if (player?.playVideo) {
+                      player.playVideo();
+                    }
+                  }}
+                >
+                  Play Video
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission Statement Section */}
+      <section className="py-16 sm:py-20 bg-gradient-to-b from-black to-[#1a1a1a]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 text-[#FF8C00]"
+            >
+              Our Mission
+            </motion.h2>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-8 sm:p-12 rounded-lg shadow-xl"
+            >
+              <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed">
+                Our goal is to give you the tools and techniques needed to become an athlete and live healthier, stronger, and longer lives with your families. We strive for you to enjoy the environment, the challenge, community, and build the fittest version of you.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
