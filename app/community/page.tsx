@@ -70,18 +70,7 @@ export default function Community() {
             animate={{ width: 96 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           />
-          <motion.div 
-            className="max-w-4xl mx-auto bg-[#1a1a1a] border border-[#FF8C00]/20 p-8 sm:p-12 rounded-lg shadow-xl"
-            variants={itemVariants}
-          >
-            <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed mb-6">
-              Branford CrossFit is the premiere CrossFit gym on the shoreline. Our mission is to inspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
-            </p>
-            <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed">
-              We offer many different types of programs for ALL ages, and ALL abilities. With our remarkable community, dedicated and genuine staff, you will not regret walking in. That is the hardest part, just showing up! DO IT!
-            </p>
           </motion.div>
-        </motion.div>
       </section>
 
       {/* Community Features Section */}

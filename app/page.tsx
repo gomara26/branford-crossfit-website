@@ -135,8 +135,7 @@ export default function Home() {
           </div>
           <div className="hidden md:flex space-x-8">
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Home</a>
-            <a href="#" className="hover:text-[#FF8C00] transition-colors">Programs</a>
-            <Link href="/schedule" className="hover:text-[#FF8C00] transition-colors">Schedule</Link>
+            <Link href="/programs" className="hover:text-[#FF8C00] transition-colors">Programs</Link>
             <div className="relative group">
               <a href="/about" className="hover:text-[#FF8C00] transition-colors">
                 About
@@ -150,7 +149,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <a href="#" className="hover:text-[#FF8C00] transition-colors">Contact</a>
+            <Link href="/contact" className="hover:text-[#FF8C00] transition-colors">Contact</Link>
           </div>
           <div className="md:hidden">
             <button 
@@ -173,8 +172,7 @@ export default function Home() {
             <div className="container mx-auto px-4 py-4">
               <div className="flex flex-col space-y-4">
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Home</a>
-                <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Programs</a>
-                <Link href="/schedule" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Schedule</Link>
+                <Link href="/programs" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Programs</Link>
                 <div className="space-y-2">
                   <div className="text-white py-2 text-lg">About</div>
                   <div className="pl-4 space-y-2">
@@ -182,7 +180,7 @@ export default function Home() {
                     <a href="/about#coaches" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Coaching</a>
                   </div>
                 </div>
-                <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Contact</a>
+                <Link href="/contact" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Contact</Link>
               </div>
             </div>
           </div>
@@ -324,10 +322,7 @@ export default function Home() {
               className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-8 sm:p-12 rounded-lg shadow-xl"
             >
               <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed">
-                Branford CrossFit is the premiere CrossFit gym on the shoreline. Our mission is to inspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
-              </p>
-              <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed mt-6">
-                We offer many different types of programs for ALL ages, and ALL abilities. With our remarkable community, dedicated and genuine staff, you will not regret walking in. That is the hardest part, just showing up! DO IT!
+              We strive toinspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
               </p>
             </motion.div>
           </div>
