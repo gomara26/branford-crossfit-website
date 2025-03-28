@@ -2,6 +2,8 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
+import { IoArrowBack } from "react-icons/io5";
 
 export default function About() {
   const coaches = [
@@ -173,6 +175,22 @@ export default function About() {
 
   return (
     <main className="min-h-screen bg-black text-white pt-20 pb-safe">
+      {/* Back Button */}
+      <motion.div 
+        className="container mx-auto px-4 mb-8"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Link 
+          href="/"
+          className="inline-flex items-center text-[#FF8C00] hover:text-white transition-colors duration-300 group"
+        >
+          <IoArrowBack className="mr-2 text-xl group-hover:-translate-x-1 transition-transform duration-300" />
+          <span className="text-lg font-medium">Back to Home</span>
+        </Link>
+      </motion.div>
+
       {/* Coaches Section */}
       <section id="coaches" className="py-16 sm:py-20 bg-black">
         <motion.div 

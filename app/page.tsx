@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { FaUsers, FaCalendarAlt } from "react-icons/fa";
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,6 +19,32 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const videoRef = useRef(null);
   const [isVideoVisible, setIsVideoVisible] = useState(false);
+  const router = useRouter();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20
+    },
+    show: { 
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,7 +141,7 @@ export default function Home() {
                 About
               </a>
               <div className="absolute top-full left-0 hidden group-hover:block w-48 bg-black border border-[#FF8C00]/20 rounded-md shadow-lg">
-                <a href="/about" className="block px-4 py-2 text-white hover:text-[#FF8C00] hover:bg-[#1a1a1a] transition-colors">
+                <a href="/community" className="block px-4 py-2 text-white hover:text-[#FF8C00] hover:bg-[#1a1a1a] transition-colors">
                   Community
                 </a>
                 <a href="/about#coaches" className="block px-4 py-2 text-white hover:text-[#FF8C00] hover:bg-[#1a1a1a] transition-colors">
@@ -149,7 +177,7 @@ export default function Home() {
                 <div className="space-y-2">
                   <div className="text-white py-2 text-lg">About</div>
                   <div className="pl-4 space-y-2">
-                    <a href="/about" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Community</a>
+                    <a href="/community" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Community</a>
                     <a href="/about#coaches" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Coaching</a>
                   </div>
                 </div>
@@ -291,7 +319,10 @@ export default function Home() {
               className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-8 sm:p-12 rounded-lg shadow-xl"
             >
               <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed">
-                Our goal is to give you the tools and techniques needed to become an athlete and live healthier, stronger, and longer lives with your families. We strive for you to enjoy the environment, the challenge, community, and build the fittest version of you.
+                Branford CrossFit is the premiere CrossFit gym on the shoreline. Our mission is to inspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
+              </p>
+              <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed mt-6">
+                We offer many different types of programs for ALL ages, and ALL abilities. With our remarkable community, dedicated and genuine staff, you will not regret walking in. That is the hardest part, just showing up! DO IT!
               </p>
             </motion.div>
           </div>
