@@ -8,6 +8,12 @@ import { programs } from "../programsData";
 import { Program } from "../types";
 import Image from "next/image";
 
+export async function generateStaticParams() {
+  return programs.map((program) => ({
+    slug: program.slug,
+  }));
+}
+
 export default function ProgramPage() {
   const { slug } = useParams();
   const program = programs.find((p: Program) => p.slug === slug);
