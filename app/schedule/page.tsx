@@ -127,7 +127,16 @@ export default function Schedule() {
                   if (document.fullscreenElement) {
                     document.exitFullscreen();
                   } else {
-                    iframe.requestFullscreen();
+                    // Try all possible fullscreen methods
+                    if (iframe.requestFullscreen) {
+                      iframe.requestFullscreen();
+                    } else if ((iframe as any).webkitRequestFullscreen) {
+                      (iframe as any).webkitRequestFullscreen();
+                    } else if ((iframe as any).mozRequestFullScreen) {
+                      (iframe as any).mozRequestFullScreen();
+                    } else if ((iframe as any).msRequestFullscreen) {
+                      (iframe as any).msRequestFullscreen();
+                    }
                   }
                 }
               }}

@@ -81,11 +81,11 @@ export default function Home() {
           modestbranding: 1,
           rel: 0,
           showinfo: 0,
-          mute: 0
+          mute: 1
         },
         events: {
           onReady: (event: any) => {
-            // Video is ready to play
+            (window as any).player = event.target;
           }
         }
       });
@@ -96,6 +96,7 @@ export default function Home() {
       (entries) => {
         entries.forEach((entry) => {
           setIsVideoVisible(entry.isIntersecting);
+          const player = (window as any).player;
           if (entry.isIntersecting && player?.playVideo) {
             player.playVideo();
           } else if (!entry.isIntersecting && player?.pauseVideo) {
@@ -130,7 +131,7 @@ export default function Home() {
             <img 
               src="/images/logo.png" 
               alt="Branford CrossFit"
-              className="h-8 md:h-12 w-auto"
+              className="h-8 md:h-12 w-auto drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
             />
           </div>
           <div className="hidden md:flex space-x-8">
@@ -174,6 +175,7 @@ export default function Home() {
               <div className="flex flex-col space-y-4">
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Home</a>
                 <Link href="/programs" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Programs</Link>
+                <Link href="/schedule" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Schedule</Link>
                 <div className="space-y-2">
                   <div className="text-white py-2 text-lg">About</div>
                   <div className="pl-4 space-y-2">
@@ -182,7 +184,6 @@ export default function Home() {
                   </div>
                 </div>
                 <Link href="/contact" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Contact</Link>
-                <Link href="/schedule" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Schedule</Link>
               </div>
             </div>
           </div>
@@ -324,7 +325,7 @@ export default function Home() {
               className="bg-[#1a1a1a] border border-[#FF8C00]/20 p-8 sm:p-12 rounded-lg shadow-xl"
             >
               <p className="text-xl sm:text-2xl md:text-3xl text-gray-300 leading-relaxed">
-              We strive toinspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
+              We strive to inspire and challenge our community to be better every day, in and out of the gym. We want to help you develop healthier life styles, while creating better habits in order to achieve and maintain your goals.
               </p>
             </motion.div>
           </div>
