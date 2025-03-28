@@ -14,8 +14,9 @@ export default function AdminLogin() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would validate against a secure backend
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
+    
+    // Hardcoded password
+    if (password === "BCF123!") {
       Cookies.set("adminAuth", "true", { expires: 1 }); // Expires in 1 day
       router.push("/admin");
     } else {
