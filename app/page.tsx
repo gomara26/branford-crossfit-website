@@ -139,6 +139,7 @@ export default function Home() {
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Home</a>
             <Link href="/programs" className="hover:text-[#FF8C00] transition-colors">Programs</Link>
             <Link href="/schedule" className="hover:text-[#FF8C00] transition-colors">Schedule</Link>
+            <Link href="/packages" className="hover:text-[#FF8C00] transition-colors">Packages</Link>
             <div className="relative group">
               <span className="hover:text-[#FF8C00] transition-colors cursor-default">
                 About
@@ -177,6 +178,7 @@ export default function Home() {
                 <a href="#" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Home</a>
                 <Link href="/programs" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Programs</Link>
                 <Link href="/schedule" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Schedule</Link>
+                <Link href="/packages" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Packages</Link>
                 <div className="space-y-2">
                   <div className="text-white py-2 text-lg">About</div>
                   <div className="pl-4 space-y-2">
