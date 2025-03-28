@@ -136,6 +136,7 @@ export default function Home() {
           <div className="hidden md:flex space-x-8">
             <a href="#" className="hover:text-[#FF8C00] transition-colors">Home</a>
             <Link href="/programs" className="hover:text-[#FF8C00] transition-colors">Programs</Link>
+            <Link href="/schedule" className="hover:text-[#FF8C00] transition-colors">Schedule</Link>
             <div className="relative group">
               <a href="/about" className="hover:text-[#FF8C00] transition-colors">
                 About
@@ -181,6 +182,7 @@ export default function Home() {
                   </div>
                 </div>
                 <Link href="/contact" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg">Contact</Link>
+                <Link href="/schedule" className="text-white hover:text-[#FF8C00] transition-colors py-2 text-lg block">Schedule</Link>
               </div>
             </div>
           </div>

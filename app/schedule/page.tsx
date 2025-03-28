@@ -117,9 +117,38 @@ export default function Schedule() {
 
           {/* Wodify Schedule Widget */}
           <motion.div 
-            className="bg-[#1a1a1a] rounded-2xl p-4 sm:p-8 border border-[#FF8C00]/20"
+            className="bg-[#1a1a1a] rounded-2xl p-4 sm:p-8 border border-[#FF8C00]/20 relative"
             variants={itemVariants}
           >
+            <button
+              onClick={() => {
+                const iframe = document.querySelector('iframe');
+                if (iframe) {
+                  if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                  } else {
+                    iframe.requestFullscreen();
+                  }
+                }
+              }}
+              className="absolute top-4 right-4 z-10 bg-[#FF8C00] text-white p-2 rounded-lg hover:bg-[#FF8C00]/90 transition-colors duration-300"
+              aria-label="Toggle fullscreen"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                />
+              </svg>
+            </button>
             <div className="aspect-[4/3] w-full">
               <iframe
                 src="https://app.wodify.com/Public/ClassCalendarEntry.aspx?TenantKey=IYy8McVct0&Location_Id=6954&Program_Id=51601,52327,52328,52329,52330,52331,52332,52333,52334,52351,58506,61828,68888,73831,77289&wmode=opaque"
