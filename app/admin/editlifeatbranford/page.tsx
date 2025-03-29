@@ -6,6 +6,8 @@ import { IoArrowBack } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { SuccessModal } from "@/components/ui/success-modal";
 
 interface GalleryImage {
   id: number;
@@ -15,8 +17,9 @@ interface GalleryImage {
 
 export default function EditLifeAtBranford() {
   const [images, setImages] = useState<GalleryImage[]>([]);
-  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -37,14 +40,14 @@ export default function EditLifeAtBranford() {
 
   const saveImages = () => {
     localStorage.setItem("galleryImages", JSON.stringify(images));
-    setMessage("Images saved successfully!");
-    setTimeout(() => setMessage(""), 3000);
+    setSuccessMessage("Images saved successfully!");
+    setShowSuccess(true);
   };
 
   const addImage = () => {
     const newImage: GalleryImage = {
       id: images.length + 1,
-      src: "/images/placeholder.jpg",
+      src: "",
       alt: `Life at Branford ${images.length + 1}`
     };
     setImages([...images, newImage]);
@@ -55,8 +58,8 @@ export default function EditLifeAtBranford() {
       const newImages = images.filter((_, i) => i !== index);
       setImages(newImages);
     } else {
-      setMessage("You must have at least one image");
-      setTimeout(() => setMessage(""), 3000);
+      setSuccessMessage("You must have at least one image");
+      setShowSuccess(true);
     }
   };
 
@@ -102,12 +105,6 @@ export default function EditLifeAtBranford() {
           EDIT LIFE AT BRANFORD
         </motion.h1>
 
-        {message && (
-          <div className="mb-8 p-4 rounded-lg bg-[#FF8C00]/20 text-[#FF8C00] text-center">
-            {message}
-          </div>
-        )}
-
         <div className="space-y-8">
           {images.map((image, index) => (
             <motion.div
@@ -129,16 +126,6 @@ export default function EditLifeAtBranford() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Image URL</label>
-                  <input
-                    type="text"
-                    value={image.src}
-                    onChange={(e) => updateImage(index, "src", e.target.value)}
-                    className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
-                  />
-                </div>
-
-                <div>
                   <label className="block text-sm font-medium mb-1">Alt Text</label>
                   <input
                     type="text"
@@ -148,11 +135,12 @@ export default function EditLifeAtBranford() {
                   />
                 </div>
 
-                <div className="aspect-square relative rounded-lg overflow-hidden">
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="object-cover w-full h-full"
+                <div>
+                  <label className="block text-sm font-medium mb-1">Image</label>
+                  <ImageUpload
+                    value={image.src}
+                    onChange={(value) => updateImage(index, "src", value)}
+                    onRemove={() => updateImage(index, "src", "")}
                   />
                 </div>
               </div>
@@ -175,6 +163,12 @@ export default function EditLifeAtBranford() {
           </button>
         </div>
       </div>
+
+      <SuccessModal
+        message={successMessage}
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
     </main>
   );
 } 

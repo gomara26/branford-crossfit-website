@@ -6,6 +6,8 @@ import { IoArrowBack } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { SuccessModal } from "@/components/ui/success-modal";
 
 interface MemberSpotlight {
   name: string;
@@ -17,8 +19,9 @@ interface MemberSpotlight {
 
 export default function EditMemberSpotlights() {
   const [spotlights, setSpotlights] = useState<MemberSpotlight[]>([]);
-  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -39,8 +42,8 @@ export default function EditMemberSpotlights() {
 
   const saveSpotlights = () => {
     localStorage.setItem("memberSpotlights", JSON.stringify(spotlights));
-    setMessage("Spotlights saved successfully!");
-    setTimeout(() => setMessage(""), 3000);
+    setSuccessMessage("Member spotlights saved successfully!");
+    setShowSuccess(true);
   };
 
   const addSpotlight = () => {
@@ -49,7 +52,7 @@ export default function EditMemberSpotlights() {
       memberSince: "2024",
       quote: "Add a quote here",
       recentAchievement: "Add an achievement here",
-      image: "/images/placeholder.jpg"
+      image: ""
     };
     setSpotlights([...spotlights, newSpotlight]);
   };
@@ -59,8 +62,8 @@ export default function EditMemberSpotlights() {
       const newSpotlights = spotlights.filter((_, i) => i !== index);
       setSpotlights(newSpotlights);
     } else {
-      setMessage("You must have at least one spotlight");
-      setTimeout(() => setMessage(""), 3000);
+      setSuccessMessage("You must have at least one spotlight");
+      setShowSuccess(true);
     }
   };
 
@@ -105,12 +108,6 @@ export default function EditMemberSpotlights() {
         >
           EDIT MEMBER SPOTLIGHTS
         </motion.h1>
-
-        {message && (
-          <div className="mb-8 p-4 rounded-lg bg-[#FF8C00]/20 text-[#FF8C00] text-center">
-            {message}
-          </div>
-        )}
 
         <div className="space-y-8">
           {spotlights.map((spotlight, index) => (
@@ -173,12 +170,11 @@ export default function EditMemberSpotlights() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Image URL</label>
-                  <input
-                    type="text"
+                  <label className="block text-sm font-medium mb-1">Image</label>
+                  <ImageUpload
                     value={spotlight.image}
-                    onChange={(e) => updateSpotlight(index, "image", e.target.value)}
-                    className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
+                    onChange={(value) => updateSpotlight(index, "image", value)}
+                    onRemove={() => updateSpotlight(index, "image", "")}
                   />
                 </div>
               </div>
@@ -201,6 +197,12 @@ export default function EditMemberSpotlights() {
           </button>
         </div>
       </div>
+
+      <SuccessModal
+        message={successMessage}
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
     </main>
   );
 } 

@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { IoArrowBack, IoAdd, IoTrash } from "react-icons/io5";
 import Image from "next/image";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { SuccessModal } from "@/components/ui/success-modal";
 
 interface GalleryImage {
   id: number;
@@ -25,7 +27,8 @@ export default function EditGallery() {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     // Initialize with default images if none exist
@@ -43,26 +46,13 @@ export default function EditGallery() {
     setIsSaving(true);
     try {
       localStorage.setItem("galleryImages", JSON.stringify(images));
-      setMessage("Gallery saved successfully!");
-      setTimeout(() => setMessage(""), 3000);
+      setSuccessMessage("Gallery saved successfully!");
+      setShowSuccess(true);
     } catch (error) {
-      setMessage("Error saving gallery");
-      setTimeout(() => setMessage(""), 3000);
+      setSuccessMessage("Error saving gallery");
+      setShowSuccess(true);
     }
     setIsSaving(false);
-  };
-
-  const handleImageUpload = (index: number, file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newImages = [...images];
-      newImages[index] = {
-        ...newImages[index],
-        src: reader.result as string
-      };
-      setImages(newImages);
-    };
-    reader.readAsDataURL(file);
   };
 
   const updateImageAlt = (index: number, value: string) => {
@@ -77,7 +67,7 @@ export default function EditGallery() {
   const addImage = () => {
     const newImage: GalleryImage = {
       id: images.length + 1,
-      src: "/images/placeholder.jpg",
+      src: "",
       alt: `Community Image ${images.length + 1}`
     };
     setImages([...images, newImage]);
@@ -88,9 +78,18 @@ export default function EditGallery() {
       const newImages = images.filter((_, i) => i !== index);
       setImages(newImages);
     } else {
-      setMessage("You must have at least one image");
-      setTimeout(() => setMessage(""), 3000);
+      setSuccessMessage("You must have at least one image");
+      setShowSuccess(true);
     }
+  };
+
+  const updateImage = (index: number, value: string) => {
+    const newImages = [...images];
+    newImages[index] = {
+      ...newImages[index],
+      src: value
+    };
+    setImages(newImages);
   };
 
   if (isLoading) {
@@ -129,12 +128,6 @@ export default function EditGallery() {
           EDIT GALLERY
         </motion.h1>
 
-        {message && (
-          <div className="mb-8 p-4 rounded-lg bg-[#FF8C00]/20 text-[#FF8C00] text-center">
-            {message}
-          </div>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {images.map((image, index) => (
             <motion.div
@@ -153,15 +146,6 @@ export default function EditGallery() {
               </button>
 
               <div className="space-y-4">
-                <div className="relative aspect-square w-full">
-                  <Image
-                    src={image.src}
-                    alt={image.alt}
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
                     Alt Text
@@ -176,21 +160,12 @@ export default function EditGallery() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Upload New Image
+                    Image
                   </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleImageUpload(index, file);
-                    }}
-                    className="block w-full text-sm text-gray-300
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-lg file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-[#FF8C00] file:text-white
-                      hover:file:bg-[#FF8C00]/90"
+                  <ImageUpload
+                    value={image.src}
+                    onChange={(value) => updateImage(index, value)}
+                    onRemove={() => updateImage(index, "")}
                   />
                 </div>
               </div>
@@ -215,6 +190,12 @@ export default function EditGallery() {
           </button>
         </div>
       </div>
+
+      <SuccessModal
+        message={successMessage}
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
     </main>
   );
 } 

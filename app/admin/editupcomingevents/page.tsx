@@ -6,6 +6,8 @@ import { IoArrowBack } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { SuccessModal } from "@/components/ui/success-modal";
 
 interface UpcomingEvent {
   title: string;
@@ -22,8 +24,9 @@ interface UpcomingEvent {
 
 export default function EditUpcomingEvents() {
   const [events, setEvents] = useState<UpcomingEvent[]>([]);
-  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -44,8 +47,8 @@ export default function EditUpcomingEvents() {
 
   const saveEvents = () => {
     localStorage.setItem("upcomingEvents", JSON.stringify(events));
-    setMessage("Events saved successfully!");
-    setTimeout(() => setMessage(""), 3000);
+    setSuccessMessage("Events saved successfully!");
+    setShowSuccess(true);
   };
 
   const addEvent = () => {
@@ -57,7 +60,7 @@ export default function EditUpcomingEvents() {
       cost: "TBD",
       who: "All members",
       description: "Add event description here",
-      image: "/images/placeholder.jpg"
+      image: ""
     };
     setEvents([...events, newEvent]);
   };
@@ -67,8 +70,8 @@ export default function EditUpcomingEvents() {
       const newEvents = events.filter((_, i) => i !== index);
       setEvents(newEvents);
     } else {
-      setMessage("You must have at least one event");
-      setTimeout(() => setMessage(""), 3000);
+      setSuccessMessage("You must have at least one event");
+      setShowSuccess(true);
     }
   };
 
@@ -113,12 +116,6 @@ export default function EditUpcomingEvents() {
         >
           EDIT UPCOMING EVENTS
         </motion.h1>
-
-        {message && (
-          <div className="mb-8 p-4 rounded-lg bg-[#FF8C00]/20 text-[#FF8C00] text-center">
-            {message}
-          </div>
-        )}
 
         <div className="space-y-8">
           {events.map((event, index) => (
@@ -211,17 +208,7 @@ export default function EditUpcomingEvents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Image URL</label>
-                  <input
-                    type="text"
-                    value={event.image}
-                    onChange={(e) => updateEvent(index, "image", e.target.value)}
-                    className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">Registration Link (Optional)</label>
+                  <label className="block text-sm font-medium mb-1">Registration Link</label>
                   <input
                     type="text"
                     value={event.registrationLink || ""}
@@ -231,12 +218,21 @@ export default function EditUpcomingEvents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Promo Code (Optional)</label>
+                  <label className="block text-sm font-medium mb-1">Promo Code</label>
                   <input
                     type="text"
                     value={event.promoCode || ""}
                     onChange={(e) => updateEvent(index, "promoCode", e.target.value)}
                     className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Image</label>
+                  <ImageUpload
+                    value={event.image}
+                    onChange={(value) => updateEvent(index, "image", value)}
+                    onRemove={() => updateEvent(index, "image", "")}
                   />
                 </div>
               </div>
@@ -259,6 +255,12 @@ export default function EditUpcomingEvents() {
           </button>
         </div>
       </div>
+
+      <SuccessModal
+        message={successMessage}
+        isOpen={showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
     </main>
   );
 } 
