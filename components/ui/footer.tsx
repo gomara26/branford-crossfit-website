@@ -115,7 +115,7 @@ export function Footer() {
           <p>© {new Date().getFullYear()} Branford CrossFit. All rights reserved.</p>
           <div className="mt-4">
             <Link 
-              href="./admin" 
+              href="/admin" 
               className="text-xs text-gray-500 hover:text-[#FF8C00] transition-colors"
             >
               Admin
