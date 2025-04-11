@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from 'zod';
 
+// Add the config export
+export const runtime = 'nodejs';
+
 // Validation schema for event data
 const eventSchema = z.object({
   title: z.string().min(1),
