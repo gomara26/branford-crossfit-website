@@ -8,16 +8,19 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { SuccessModal } from "@/components/ui/success-modal";
-
-interface GalleryImage {
-  id: number;
-  src: string;
-  alt: string;
-}
+import { useGallery } from "@/hooks/useGallery";
+import type { GalleryImage } from "@/types";
 
 export default function EditLifeAtBranford() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { 
+    images, 
+    isLoading, 
+    error,
+    createImage,
+    updateImage: updateGalleryImage,
+    deleteImage
+  } = useGallery();
+  
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
@@ -29,50 +32,65 @@ export default function EditLifeAtBranford() {
       router.push("/admin/login");
       return;
     }
-
-    // Load images from localStorage
-    const savedImages = localStorage.getItem("galleryImages");
-    if (savedImages) {
-      setImages(JSON.parse(savedImages));
-    }
-    setIsLoading(false);
   }, [router]);
 
-  const saveImages = () => {
-    localStorage.setItem("galleryImages", JSON.stringify(images));
-    setSuccessMessage("Images saved successfully!");
-    setShowSuccess(true);
+  const handleAddImage = async () => {
+    try {
+      await createImage({
+        url: "",
+        caption: `Life at Branford ${images.length + 1}`
+      });
+      setSuccessMessage("New image added successfully!");
+      setShowSuccess(true);
+    } catch (err) {
+      setSuccessMessage(err instanceof Error ? err.message : "Failed to add image");
+      setShowSuccess(true);
+    }
   };
 
-  const addImage = () => {
-    const newImage: GalleryImage = {
-      id: images.length + 1,
-      src: "",
-      alt: `Life at Branford ${images.length + 1}`
-    };
-    setImages([...images, newImage]);
-  };
-
-  const removeImage = (index: number) => {
+  const handleRemoveImage = async (id: string) => {
     if (images.length > 1) {
-      const newImages = images.filter((_, i) => i !== index);
-      setImages(newImages);
+      try {
+        await deleteImage(id);
+        setSuccessMessage("Image removed successfully!");
+        setShowSuccess(true);
+      } catch (err) {
+        setSuccessMessage(err instanceof Error ? err.message : "Failed to remove image");
+        setShowSuccess(true);
+      }
     } else {
       setSuccessMessage("You must have at least one image");
       setShowSuccess(true);
     }
   };
 
-  const updateImage = (index: number, field: keyof GalleryImage, value: string) => {
-    const newImages = [...images];
-    newImages[index] = { ...newImages[index], [field]: value };
-    setImages(newImages);
+  const handleUpdateImage = async (id: string, field: keyof GalleryImage, value: string) => {
+    try {
+      await updateGalleryImage(id, { [field]: value });
+    } catch (err) {
+      setSuccessMessage(err instanceof Error ? err.message : "Failed to update image");
+      setShowSuccess(true);
+    }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white pt-20 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <div className="relative w-24 h-24">
+          <div className="absolute inset-0 rounded-full border-t-2 border-b-2 border-[#FF8C00] animate-spin"></div>
+          <div className="absolute inset-2 rounded-full border-r-2 border-l-2 border-[#FF8C00]/50 animate-spin animate-reverse"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-20 flex items-center justify-center">
+        <div className="text-white text-center max-w-md p-8 bg-[#1a1a1a] rounded-lg border border-red-500/30">
+          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+          <p className="text-zinc-400">{error}</p>
+        </div>
       </div>
     );
   }
@@ -108,7 +126,7 @@ export default function EditLifeAtBranford() {
         <div className="space-y-8">
           {images.map((image, index) => (
             <motion.div
-              key={index}
+              key={image.id}
               className="bg-[#1a1a1a] rounded-lg p-6 border border-[#FF8C00]/20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -117,7 +135,7 @@ export default function EditLifeAtBranford() {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">Image {index + 1}</h2>
                 <button
-                  onClick={() => removeImage(index)}
+                  onClick={() => handleRemoveImage(image.id)}
                   className="text-red-500 hover:text-red-400 transition-colors"
                 >
                   Remove
@@ -126,21 +144,22 @@ export default function EditLifeAtBranford() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Alt Text</label>
+                  <label className="block text-sm font-medium mb-1">Caption</label>
                   <input
                     type="text"
-                    value={image.alt}
-                    onChange={(e) => updateImage(index, "alt", e.target.value)}
+                    value={image.caption || ''}
+                    onChange={(e) => handleUpdateImage(image.id, "caption", e.target.value)}
                     className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Image</label>
+                  <label className="block text-sm font-medium mb-1">Image URL</label>
                   <ImageUpload
-                    value={image.src}
-                    onChange={(value) => updateImage(index, "src", value)}
-                    onRemove={() => updateImage(index, "src", "")}
+                    name={`image-${image.id}`}
+                    value={image.url}
+                    onChange={(value) => handleUpdateImage(image.id, "url", value)}
+                    onRemove={() => handleUpdateImage(image.id, "url", "")}
                   />
                 </div>
               </div>
@@ -150,23 +169,17 @@ export default function EditLifeAtBranford() {
 
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <button
-            onClick={addImage}
+            onClick={handleAddImage}
             className="bg-[#FF8C00] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#FF8C00]/90 transition-colors"
           >
             Add Image
-          </button>
-          <button
-            onClick={saveImages}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
-          >
-            Save Changes
           </button>
         </div>
       </div>
 
       <SuccessModal
         message={successMessage}
-        isOpen={showSuccess}
+        show={showSuccess}
         onClose={() => setShowSuccess(false)}
       />
     </main>

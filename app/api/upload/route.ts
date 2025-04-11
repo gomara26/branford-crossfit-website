@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
+import { existsSync } from "fs";
 
 export async function POST(request: Request) {
   try {
@@ -26,18 +27,28 @@ export async function POST(request: Request) {
     const uniqueId = uuidv4();
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
     const filename = `${uniqueId}.${extension}`;
-    const path = join(process.cwd(), "public/uploads", filename);
+    
+    // Define uploads directory path
+    const uploadsDir = join(process.cwd(), "public/uploads");
+    const path = join(uploadsDir, filename);
 
     console.log("Saving file to:", path);
 
     // Ensure the uploads directory exists
     try {
+      // Check if directory exists, create if it doesn't
+      if (!existsSync(uploadsDir)) {
+        console.log("Creating uploads directory:", uploadsDir);
+        await mkdir(uploadsDir, { recursive: true });
+      }
+      
+      // Write the file
       await writeFile(path, buffer);
       console.log("File saved successfully");
     } catch (writeError) {
       console.error("Error writing file:", writeError);
       return NextResponse.json(
-        { error: "Failed to save file" },
+        { error: "Failed to save file. Check server logs for details." },
         { status: 500 }
       );
     }

@@ -9,22 +9,41 @@ import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from "react-im
 import "react-image-crop/dist/ReactCrop.css";
 
 interface ImageUploadProps {
-  value: string;
-  onChange: (value: string) => void;
+  name: string;
+  value?: string;
+  onChange?: (value: string) => void;
   onRemove?: () => void;
   className?: string;
 }
 
-export function ImageUpload({ value, onChange, onRemove, className = "" }: ImageUploadProps) {
+export function ImageUpload({ name, value, onChange, onRemove, className = "" }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [crop, setCrop] = useState<Crop>();
   const [isCropping, setIsCropping] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const [previewUrl, setPreviewUrl] = useState(value);
+
+  const handleImageChange = (newUrl: string) => {
+    setPreviewUrl(newUrl);
+    onChange?.(newUrl); // Use optional chaining
+  };
+
+  const handleRemove = () => {
+    setPreviewUrl("");
+    onChange?.(""); // Use optional chaining
+    onRemove?.();
+  };
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (!file) return;
+
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File size exceeds 10MB limit. Please choose a smaller image.");
+      return;
+    }
 
     setIsUploading(true);
     setError(null);
@@ -40,19 +59,23 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
         body: formData,
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error("Upload failed");
+        throw new Error(data.error || "Upload failed");
       }
 
-      const data = await response.json();
-      onChange(data.url);
+      handleImageChange(data.url);
+      // Automatically show crop interface after successful upload
+      setIsCropping(true);
     } catch (err) {
-      setError("Failed to upload image. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : "Failed to upload image. Please try again.";
+      setError(errorMessage);
       console.error("Upload error:", err);
     } finally {
       setIsUploading(false);
     }
-  }, [onChange]);
+  }, [handleImageChange]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -65,67 +88,124 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
-    const crop = centerCrop(
-      makeAspectCrop(
-        {
-          unit: "%",
-          width: 100,
-          height: 100,
-        },
-        1,
-        width,
-        height
-      ),
-      width,
-      height
-    );
-    setCrop(crop);
+    
+    // Check if image is too small
+    const minImageSize = 200; // Minimum image size in pixels
+    if (width < minImageSize || height < minImageSize) {
+      setError("Image is too small. Please use a larger image (at least 200x200 pixels).");
+      return;
+    }
+    
+    // Use maximum allowed size (1000px) or image size if smaller
+    const maxSize = 1000;
+    const size = Math.min(width, height, maxSize);
+    
+    // Center the crop
+    const x = (width - size) / 2;
+    const y = (height - size) / 2;
+    
+    // Set up initial crop
+    const newCrop: Crop = {
+      unit: "px",
+      x,
+      y,
+      width: size,
+      height: size
+    };
+    
+    setCrop(newCrop);
   }, []);
 
   const getCroppedImg = useCallback(async (image: HTMLImageElement, crop: PixelCrop) => {
     const canvas = document.createElement("canvas");
+    
+    // Calculate proper scaling while maintaining aspect ratio
+    const pixelRatio = window.devicePixelRatio;
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    const scale = Math.min(scaleX, scaleY);
+
+    // Use scaled dimensions
+    canvas.width = Math.floor(crop.width * scale);
+    canvas.height = Math.floor(crop.height * scale);
+    
     const ctx = canvas.getContext("2d");
 
     if (!ctx) {
       throw new Error("No 2d context");
     }
 
+    // Set rendering quality
+    ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingEnabled = true;
+
+    // Draw the cropped image with proper scaling
     ctx.drawImage(
       image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      crop.x * scale,
+      crop.y * scale,
+      crop.width * scale,
+      crop.height * scale,
       0,
       0,
-      crop.width,
-      crop.height
+      canvas.width,
+      canvas.height
     );
 
+    // Convert to blob with proper quality
     return new Promise<string>((resolve) => {
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          throw new Error("Canvas is empty");
-        }
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          resolve(reader.result as string);
-        };
-      }, "image/jpeg");
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            throw new Error("Canvas is empty");
+          }
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+        },
+        "image/jpeg",
+        0.95  // Increased quality to prevent artifacts
+      );
     });
+  }, []);
+
+  const validateCrop = useCallback((crop: PixelCrop) => {
+    // Ensure crop dimensions are reasonable
+    const minSize = 50; // Minimum size in pixels
+    const maxSize = 2000; // Maximum size in pixels
+    
+    // If crop is too small, adjust it
+    if (crop.width < minSize || crop.height < minSize) {
+      return {
+        ...crop,
+        width: Math.max(crop.width, minSize),
+        height: Math.max(crop.height, minSize)
+      };
+    }
+    
+    // If crop is too large, adjust it
+    if (crop.width > maxSize || crop.height > maxSize) {
+      const scale = Math.min(maxSize / crop.width, maxSize / crop.height);
+      return {
+        ...crop,
+        width: crop.width * scale,
+        height: crop.height * scale
+      };
+    }
+    
+    return crop;
   }, []);
 
   const handleCropComplete = async () => {
     if (!imgRef.current || !crop) return;
 
     try {
-      const croppedImageUrl = await getCroppedImg(imgRef.current, crop as PixelCrop);
-      onChange(croppedImageUrl);
+      // Validate and adjust crop if needed
+      const validatedCrop = validateCrop(crop as PixelCrop);
+      const croppedImageUrl = await getCroppedImg(imgRef.current, validatedCrop);
+      handleImageChange(croppedImageUrl);
       setIsCropping(false);
     } catch (e) {
       console.error("Error cropping image:", e);
@@ -134,12 +214,17 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
   };
 
   return (
-    <div className={`space-y-4 ${className}`}>
-      {value ? (
+    <div className={`relative ${className}`}>
+      <input
+        type="hidden"
+        name={name}
+        value={previewUrl || ""}
+      />
+      {previewUrl ? (
         <div className="relative group">
           <div className="aspect-square relative rounded-lg overflow-hidden">
             <Image
-              src={value}
+              src={previewUrl}
               alt="Uploaded image"
               fill
               className="object-cover"
@@ -147,7 +232,7 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
             <div className="absolute top-2 right-2 flex gap-2">
               {onRemove && (
                 <button
-                  onClick={onRemove}
+                  onClick={handleRemove}
                   className="p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <IoClose className="w-5 h-5" />
@@ -190,7 +275,7 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
         </div>
       )}
 
-      {isCropping && value && (
+      {isCropping && previewUrl && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
           <div className="bg-[#1a1a1a] rounded-lg p-6 max-w-4xl w-full">
             <div className="flex justify-between items-center mb-4">
@@ -215,14 +300,26 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
                 crop={crop}
                 onChange={(c) => setCrop(c)}
                 aspect={1}
-                className="max-h-[60vh]"
+                className="max-h-[60vh] [--ReactCrop-border-color:rgba(255,140,0,0.5)] [--ReactCrop-selection-background-color:rgba(255,140,0,0.15)] [--ReactCrop-crop-area-border-color:#FF8C00]"
+                minWidth={200}
+                minHeight={200}
+                maxWidth={1000}
+                maxHeight={1000}
+                keepSelection
+                ruleOfThirds
               >
                 <img
                   ref={imgRef}
-                  src={value}
+                  src={previewUrl}
                   alt="Crop me"
                   onLoad={onImageLoad}
                   className="max-w-full"
+                  style={{ 
+                    maxHeight: "60vh",
+                    width: "auto",
+                    objectFit: "contain",
+                    transform: "none"
+                  }}
                 />
               </ReactCrop>
             </div>
@@ -237,8 +334,9 @@ export function ImageUpload({ value, onChange, onRemove, className = "" }: Image
       )}
 
       {error && (
-        <div className="text-center text-red-500">
-          {error}
+        <div className="text-center text-red-500 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+          <p className="font-medium">Upload Error</p>
+          <p>{error}</p>
         </div>
       )}
     </div>

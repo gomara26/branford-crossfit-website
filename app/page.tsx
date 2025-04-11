@@ -82,7 +82,7 @@ export default function Home() {
           modestbranding: 1,
           rel: 0,
           showinfo: 0,
-          mute: 1
+          mute: 0
         },
         events: {
           onReady: (event: any) => {
@@ -345,7 +345,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
             className="text-4xl sm:text-5xl md:text-6xl font-bold mb-12 text-center"
           >
-            NOT JUST CROSSFIT
+            BEYOND CROSSFIT
           </motion.h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
