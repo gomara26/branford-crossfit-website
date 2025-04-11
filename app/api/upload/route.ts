@@ -4,6 +4,9 @@ import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 import { existsSync } from "fs";
 
+// Specify Node.js runtime
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

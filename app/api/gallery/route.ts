@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+// Specify Node.js runtime
+export const runtime = 'nodejs';
+
 // GET /api/gallery
 export async function GET() {
   try {
@@ -12,9 +15,12 @@ export async function GET() {
     
     return NextResponse.json(images);
   } catch (error) {
+    // Improved error logging
     console.error('Error fetching gallery images:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    
     return NextResponse.json(
-      { error: 'Failed to fetch gallery images' },
+      { error: 'Failed to fetch gallery images', details: process.env.NODE_ENV === 'development' ? error : 'See server logs' },
       { status: 500 }
     );
   }

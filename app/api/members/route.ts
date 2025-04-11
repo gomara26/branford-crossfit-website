@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+// Specify Node.js runtime
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     const members = await prisma.memberSpotlight.findMany({
@@ -8,8 +11,12 @@ export async function GET() {
     })
     return NextResponse.json(members)
   } catch (error) {
+    // Improved error logging
+    console.error('Error fetching members:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    
     return NextResponse.json(
-      { error: 'Failed to fetch member spotlights' },
+      { error: 'Failed to fetch member spotlights', details: process.env.NODE_ENV === 'development' ? error : 'See server logs' },
       { status: 500 }
     )
   }
