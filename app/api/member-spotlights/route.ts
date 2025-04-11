@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+// Add the config export
+export const runtime = 'nodejs';
+
 // GET /api/member-spotlights
 export async function GET() {
   try {
-    const spotlights = await prisma.memberSpotlight.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
+    const memberSpotlights = await prisma.memberSpotlight.findMany({
+      orderBy: { createdAt: 'desc' }
     });
-    
-    return NextResponse.json(spotlights);
+    return NextResponse.json(memberSpotlights);
   } catch (error) {
+    // Improved error logging
     console.error('Error fetching member spotlights:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    
     return NextResponse.json(
-      { error: 'Failed to fetch member spotlights' },
+      { error: 'Failed to fetch member spotlights', details: process.env.NODE_ENV === 'development' ? error : 'See server logs' },
       { status: 500 }
     );
   }
