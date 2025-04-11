@@ -3,37 +3,14 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Footer } from '@/components/ui/footer'
 
-// Optimize font loading
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-})
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Branford CrossFit',
   description: 'Join Branford CrossFit and become part of a community dedicated to helping you achieve your fitness goals.',
-  keywords: ['CrossFit', 'Branford', 'Fitness', 'Gym', 'Training', 'Workout', 'Community'],
-  authors: [{ name: 'Branford CrossFit' }],
-  creator: 'Branford CrossFit',
-  publisher: 'Branford CrossFit',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-icon.png',
   },
-}
-
-// Add viewport configuration
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-  themeColor: '#000000',
 }
 
 export default function RootLayout({
@@ -42,9 +19,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <body className={inter.className}>
-        <main>{children}</main>
+        {children}
         <Footer />
       </body>
     </html>
