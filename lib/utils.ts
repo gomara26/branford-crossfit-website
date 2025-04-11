@@ -38,7 +38,7 @@ export const storage = {
   }
 };
 
-// Date formatting utility
+// Date formatting utilities
 export const formatDate = (dateString: string): string => {
   try {
     const date = new Date(dateString);
@@ -50,6 +50,22 @@ export const formatDate = (dateString: string): string => {
     }).format(date);
   } catch (error) {
     console.error("Error formatting date:", error);
+    return dateString;
+  }
+};
+
+export const formatDateTime = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    }).format(date);
+  } catch (error) {
+    console.error("Error formatting date and time:", error);
     return dateString;
   }
 };
@@ -105,3 +121,64 @@ export const validators = {
     }
   }
 };
+
+// Performance optimization - Debounce function
+export const debounce = <F extends (...args: any[]) => any>(
+  func: F,
+  waitFor: number
+) => {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeout !== null) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    timeout = setTimeout(() => func(...args), waitFor);
+  };
+
+  return debounced as (...args: Parameters<F>) => ReturnType<F>;
+};
+
+// Performance optimization - Throttle function
+export const throttle = <F extends (...args: any[]) => any>(
+  func: F,
+  waitFor: number
+) => {
+  let lastTime = 0;
+  
+  const throttled = (...args: Parameters<F>) => {
+    const now = Date.now();
+    if (now - lastTime >= waitFor) {
+      func(...args);
+      lastTime = now;
+    }
+  };
+  
+  return throttled as (...args: Parameters<F>) => ReturnType<F>;
+};
+
+// Format file size
+export const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  
+  return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
+};
+
+// Generate a random string (useful for temporary IDs)
+export const generateRandomString = (length = 8): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return result;
+};
+
+// Check if the code is running on the client side
+export const isClient = typeof window !== 'undefined';

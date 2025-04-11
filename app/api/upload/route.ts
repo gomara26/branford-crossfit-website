@@ -7,8 +7,14 @@ import { existsSync } from "fs";
 // Specify Node.js runtime
 export const runtime = 'nodejs';
 
+// Set max duration for upload requests
+export const maxDuration = 60; // 60 seconds for uploads
+
 export async function POST(request: Request) {
   try {
+    // Start timing for performance tracking
+    const startTime = Date.now();
+    
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
@@ -20,45 +26,67 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("Received file:", file.name, "Type:", file.type, "Size:", file.size);
+    // Quick validation checks
+    if (file.size > 15 * 1024 * 1024) { // 15MB limit
+      return NextResponse.json(
+        { error: "File size exceeds the 15MB limit" },
+        { status: 400 }
+      );
+    }
 
-    // Convert File to ArrayBuffer
+    // Log with better performance info
+    console.log(`Processing file: ${file.name} | Type: ${file.type} | Size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
+
+    // Convert File to ArrayBuffer efficiently
     const arrayBuffer = await file.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
-    // Create unique filename
+    // Create unique filename with organized structure
     const uniqueId = uuidv4();
     const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const filename = `${uniqueId}.${extension}`;
     
-    // Define uploads directory path
-    const uploadsDir = join(process.cwd(), "public/uploads");
-    const path = join(uploadsDir, filename);
-
-    console.log("Saving file to:", path);
-
-    // Ensure the uploads directory exists
+    // Organize files by date to prevent too many files in one directory
+    const today = new Date();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    
+    // Use structured paths for better organization
+    const uploadDirBase = join(process.cwd(), "public/uploads");
+    const monthDir = join(uploadDirBase, `${year}-${month}`);
+    const filename = `${uniqueId}.${extension}`;
+    const filePath = join(monthDir, filename);
+    
+    // Ensure directory exists with efficient checks
     try {
-      // Check if directory exists, create if it doesn't
-      if (!existsSync(uploadsDir)) {
-        console.log("Creating uploads directory:", uploadsDir);
-        await mkdir(uploadsDir, { recursive: true });
+      // Only create directories if they don't exist
+      if (!existsSync(uploadDirBase)) {
+        await mkdir(uploadDirBase, { recursive: true });
       }
       
-      // Write the file
-      await writeFile(path, buffer);
-      console.log("File saved successfully");
+      if (!existsSync(monthDir)) {
+        await mkdir(monthDir, { recursive: true });
+      }
+      
+      // Write file with more detailed error handling
+      await writeFile(filePath, buffer);
+      
+      // Calculate performance metrics
+      const processingTime = Date.now() - startTime;
+      console.log(`File saved successfully: ${filePath} | Processing time: ${processingTime}ms`);
     } catch (writeError) {
       console.error("Error writing file:", writeError);
       return NextResponse.json(
-        { error: "Failed to save file. Check server logs for details." },
+        { error: "Failed to save file. Server storage error." },
         { status: 500 }
       );
     }
 
-    // Return the URL
+    // Return a path that works with the file structure
+    const relativePath = `/uploads/${year}-${month}/${filename}`;
+    
     return NextResponse.json({
-      url: `/uploads/${filename}`,
+      url: relativePath,
+      processingTime: Date.now() - startTime,
     });
   } catch (error) {
     console.error("Upload error:", error);

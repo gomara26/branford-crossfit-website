@@ -3,8 +3,27 @@
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export function Footer() {
+  const [mounted, setMounted] = useState(false);
+
+  // Use useEffect to ensure component is mounted on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Only render complete footer when mounted
+  if (!mounted) {
+    return (
+      <footer className="bg-[#1a1a1a] text-white">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center">Loading footer...</div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer className="bg-[#1a1a1a] text-white">
       <div className="container mx-auto px-4 py-12">
@@ -85,7 +104,7 @@ export function Footer() {
               </div>
             </div>
 
-            {/* Affiliate Logos */}
+            {/* Affiliate Logos - Using error handling for images */}
             <div className="space-y-4">
               <h3 className="text-xl font-bold mb-4">Affiliations</h3>
               <div className="flex flex-col gap-4">
@@ -93,16 +112,26 @@ export function Footer() {
                   <Image
                     src="/images/crossfit-logo.jpg"
                     alt="CrossFit Affiliate"
-                    fill
+                    width={150}
+                    height={40}
                     className="object-contain"
+                    onError={(e) => {
+                      // Fallback for image load error
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 </div>
                 <div className="relative h-16 w-full">
                   <Image
                     src="/images/wehightliftinglogo.png"
                     alt="USA Weightlifting"
-                    fill
+                    width={150}
+                    height={64}
                     className="object-contain"
+                    onError={(e) => {
+                      // Fallback for image load error
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 </div>
               </div>

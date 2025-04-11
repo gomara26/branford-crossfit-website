@@ -5,6 +5,9 @@ import { z } from 'zod';
 // Add the config export
 export const runtime = 'nodejs';
 
+// Optional request timeout configuration (30 seconds)
+export const maxDuration = 30; // max 30 seconds for request duration
+
 // Validation schema for event data
 const eventSchema = z.object({
   title: z.string().min(1),

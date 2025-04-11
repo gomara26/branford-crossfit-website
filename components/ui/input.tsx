@@ -3,10 +3,50 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  debounce?: number;
+}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, onChange, debounce = 0, ...props }, ref) => {
+    // For immediate response to typing
+    const [value, setValue] = React.useState(props.value || props.defaultValue || '');
+    
+    // Store the timeout ID for debouncing
+    const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    
+    // Clear timeout on unmount
+    React.useEffect(() => {
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    }, []);
+    
+    // Handle change with optional debounce
+    const handleChange = React.useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Always update local state immediately for responsive UI
+        setValue(e.target.value);
+        
+        // If we have a debounce delay, use it
+        if (debounce > 0 && onChange) {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+          
+          timeoutRef.current = setTimeout(() => {
+            onChange(e);
+          }, debounce);
+        } else if (onChange) {
+          // No debounce, call onChange directly
+          onChange(e);
+        }
+      },
+      [onChange, debounce]
+    );
+    
     return (
       <input
         type={type}
@@ -15,11 +55,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className
         )}
         ref={ref}
+        onChange={handleChange}
+        value={value}
         {...props}
       />
     );
   }
 );
+
 Input.displayName = 'Input';
 
 export { Input };
