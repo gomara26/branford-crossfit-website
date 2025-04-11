@@ -187,6 +187,7 @@ export default function EditMemberSpotlights() {
                 <div>
                   <label className="block text-sm font-medium mb-1">Image</label>
                   <ImageUpload
+                    name={`spotlight-image-${spotlight.id}`}
                     value={spotlight.image}
                     onChange={(value) => handleUpdateSpotlight(spotlight.id, "image", value)}
                     onRemove={() => handleUpdateSpotlight(spotlight.id, "image", "")}
@@ -209,7 +210,7 @@ export default function EditMemberSpotlights() {
 
       <SuccessModal
         message={successMessage}
-        isOpen={showSuccess}
+        show={showSuccess}
         onClose={() => setShowSuccess(false)}
       />
     </main>
