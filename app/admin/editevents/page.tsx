@@ -214,7 +214,17 @@ export default function EditEvents() {
               <label className="block text-sm font-medium text-gray-700">
                 Image
               </label>
-              <ImageUpload name="image" />
+              <ImageUpload 
+                name="image" 
+                value=""
+                onChange={(value) => {
+                  // You can add specific functionality here if needed
+                  // For now, we'll just use it for display/upload
+                }}
+                onRemove={() => {
+                  // Handle image removal if needed
+                }}
+              />
             </div>
 
             <div>
