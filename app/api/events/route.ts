@@ -34,9 +34,17 @@ export async function GET() {
     
     return NextResponse.json(formattedEvents);
   } catch (error) {
+    // Improved error logging with detailed information
     console.error('Failed to fetch events:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    console.error('Environment:', process.env.NODE_ENV);
+    
     return NextResponse.json(
-      { error: 'Failed to fetch events' },
+      { 
+        error: 'Failed to fetch events', 
+        details: process.env.NODE_ENV === 'development' ? error : 'See server logs',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
