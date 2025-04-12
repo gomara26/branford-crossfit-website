@@ -166,6 +166,7 @@ export default function EditGallery() {
                     value={image.src}
                     onChange={(value) => updateImage(index, value)}
                     onRemove={() => updateImage(index, "")}
+                    name={`gallery-image-${index}`}
                   />
                 </div>
               </div>
@@ -193,7 +194,7 @@ export default function EditGallery() {
 
       <SuccessModal
         message={successMessage}
-        isOpen={showSuccess}
+        show={showSuccess}
         onClose={() => setShowSuccess(false)}
       />
     </main>

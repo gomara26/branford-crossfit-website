@@ -8,75 +8,90 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { SuccessModal } from "@/components/ui/success-modal";
+import { useMemberSpotlights } from "@/hooks/useMemberSpotlights";
+import type { MemberSpotlight } from "@/types";
 
-interface MemberSpotlight {
-  name: string;
-  memberSince: string;
-  quote: string;
-  recentAchievement: string;
-  image: string;
-}
+const defaultSpotlight: Omit<MemberSpotlight, 'id'> = {
+  name: "New Member",
+  memberSince: new Date().getFullYear().toString(),
+  quote: "Add a quote here",
+  recentAchievement: "Add an achievement here",
+  image: ""
+};
 
 export default function EditMemberSpotlights() {
-  const [spotlights, setSpotlights] = useState<MemberSpotlight[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { 
+    spotlights, 
+    isLoading, 
+    error,
+    createSpotlight,
+    updateSpotlight,
+    deleteSpotlight
+  } = useMemberSpotlights();
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const router = useRouter();
 
   useEffect(() => {
     // Check if user is authenticated
     const adminAuth = Cookies.get("adminAuth");
     if (!adminAuth || adminAuth !== "true") {
       router.push("/admin/login");
-      return;
     }
-
-    // Load spotlights from localStorage
-    const savedSpotlights = localStorage.getItem("memberSpotlights");
-    if (savedSpotlights) {
-      setSpotlights(JSON.parse(savedSpotlights));
-    }
-    setIsLoading(false);
   }, [router]);
 
-  const saveSpotlights = () => {
-    localStorage.setItem("memberSpotlights", JSON.stringify(spotlights));
-    setSuccessMessage("Member spotlights saved successfully!");
-    setShowSuccess(true);
-  };
-
-  const addSpotlight = () => {
-    const newSpotlight: MemberSpotlight = {
-      name: "New Member",
-      memberSince: "2024",
-      quote: "Add a quote here",
-      recentAchievement: "Add an achievement here",
-      image: ""
-    };
-    setSpotlights([...spotlights, newSpotlight]);
-  };
-
-  const removeSpotlight = (index: number) => {
-    if (spotlights.length > 1) {
-      const newSpotlights = spotlights.filter((_, i) => i !== index);
-      setSpotlights(newSpotlights);
-    } else {
-      setSuccessMessage("You must have at least one spotlight");
+  const addSpotlight = async () => {
+    try {
+      await createSpotlight(defaultSpotlight);
+      setSuccessMessage("New spotlight added successfully!");
+      setShowSuccess(true);
+    } catch (err) {
+      setSuccessMessage(err instanceof Error ? err.message : "Failed to add spotlight");
       setShowSuccess(true);
     }
   };
 
-  const updateSpotlight = (index: number, field: keyof MemberSpotlight, value: string) => {
-    const newSpotlights = [...spotlights];
-    newSpotlights[index] = { ...newSpotlights[index], [field]: value };
-    setSpotlights(newSpotlights);
+  const handleRemoveSpotlight = async (id: string) => {
+    if (spotlights.length <= 1) {
+      setSuccessMessage("You must have at least one spotlight");
+      setShowSuccess(true);
+      return;
+    }
+
+    try {
+      await deleteSpotlight(id);
+      setSuccessMessage("Spotlight removed successfully!");
+      setShowSuccess(true);
+    } catch (err) {
+      setSuccessMessage(err instanceof Error ? err.message : "Failed to remove spotlight");
+      setShowSuccess(true);
+    }
+  };
+
+  const handleUpdateSpotlight = async (id: string, field: keyof MemberSpotlight, value: string) => {
+    try {
+      await updateSpotlight(id, { [field]: value });
+    } catch (err) {
+      setSuccessMessage(err instanceof Error ? err.message : "Failed to update spotlight");
+      setShowSuccess(true);
+    }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white pt-20 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF8C00]"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-20 flex items-center justify-center">
+        <div className="text-center text-red-500">
+          <p className="text-xl mb-2">Error loading spotlights</p>
+          <p>{error}</p>
+        </div>
       </div>
     );
   }
@@ -110,18 +125,18 @@ export default function EditMemberSpotlights() {
         </motion.h1>
 
         <div className="space-y-8">
-          {spotlights.map((spotlight, index) => (
+          {spotlights.map((spotlight) => (
             <motion.div
-              key={index}
+              key={spotlight.id}
               className="bg-[#1a1a1a] rounded-lg p-6 border border-[#FF8C00]/20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Spotlight {index + 1}</h2>
+                <h2 className="text-2xl font-bold">Member Spotlight</h2>
                 <button
-                  onClick={() => removeSpotlight(index)}
+                  onClick={() => handleRemoveSpotlight(spotlight.id)}
                   className="text-red-500 hover:text-red-400 transition-colors"
                 >
                   Remove
@@ -134,7 +149,7 @@ export default function EditMemberSpotlights() {
                   <input
                     type="text"
                     value={spotlight.name}
-                    onChange={(e) => updateSpotlight(index, "name", e.target.value)}
+                    onChange={(e) => handleUpdateSpotlight(spotlight.id, "name", e.target.value)}
                     className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
                   />
                 </div>
@@ -144,7 +159,7 @@ export default function EditMemberSpotlights() {
                   <input
                     type="text"
                     value={spotlight.memberSince}
-                    onChange={(e) => updateSpotlight(index, "memberSince", e.target.value)}
+                    onChange={(e) => handleUpdateSpotlight(spotlight.id, "memberSince", e.target.value)}
                     className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
                   />
                 </div>
@@ -153,7 +168,7 @@ export default function EditMemberSpotlights() {
                   <label className="block text-sm font-medium mb-1">Quote</label>
                   <textarea
                     value={spotlight.quote}
-                    onChange={(e) => updateSpotlight(index, "quote", e.target.value)}
+                    onChange={(e) => handleUpdateSpotlight(spotlight.id, "quote", e.target.value)}
                     className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
                     rows={3}
                   />
@@ -164,7 +179,7 @@ export default function EditMemberSpotlights() {
                   <input
                     type="text"
                     value={spotlight.recentAchievement}
-                    onChange={(e) => updateSpotlight(index, "recentAchievement", e.target.value)}
+                    onChange={(e) => handleUpdateSpotlight(spotlight.id, "recentAchievement", e.target.value)}
                     className="w-full px-4 py-2 bg-black border border-[#FF8C00]/20 rounded-lg focus:outline-none focus:border-[#FF8C00] transition-colors"
                   />
                 </div>
@@ -172,9 +187,10 @@ export default function EditMemberSpotlights() {
                 <div>
                   <label className="block text-sm font-medium mb-1">Image</label>
                   <ImageUpload
+                    name={`spotlight-image-${spotlight.id}`}
                     value={spotlight.image}
-                    onChange={(value) => updateSpotlight(index, "image", value)}
-                    onRemove={() => updateSpotlight(index, "image", "")}
+                    onChange={(value) => handleUpdateSpotlight(spotlight.id, "image", value)}
+                    onRemove={() => handleUpdateSpotlight(spotlight.id, "image", "")}
                   />
                 </div>
               </div>
@@ -189,18 +205,12 @@ export default function EditMemberSpotlights() {
           >
             Add Spotlight
           </button>
-          <button
-            onClick={saveSpotlights}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
-          >
-            Save Changes
-          </button>
         </div>
       </div>
 
       <SuccessModal
         message={successMessage}
-        isOpen={showSuccess}
+        show={showSuccess}
         onClose={() => setShowSuccess(false)}
       />
     </main>

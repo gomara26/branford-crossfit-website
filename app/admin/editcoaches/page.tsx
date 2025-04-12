@@ -261,6 +261,7 @@ export default function EditCoaches() {
                     Image
                   </label>
                   <ImageUpload
+                    name={`coach-image-${index}`}
                     value={coach.image}
                     onChange={(value) => updateCoach(index, "image", value)}
                     onRemove={() => updateCoach(index, "image", "")}
@@ -355,7 +356,7 @@ export default function EditCoaches() {
 
       <SuccessModal
         message={successMessage}
-        isOpen={showSuccess}
+        show={showSuccess}
         onClose={() => setShowSuccess(false)}
       />
     </main>
