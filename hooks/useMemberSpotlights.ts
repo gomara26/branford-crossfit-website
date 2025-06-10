@@ -15,13 +15,18 @@ export function useMemberSpotlights(): UseMemberSpotlightsReturn {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get the base URL for API calls
+  const baseUrl = typeof window !== 'undefined' 
+    ? window.location.origin 
+    : process.env.NEXT_PUBLIC_BASE_URL || '';
+
   useEffect(() => {
     fetchSpotlights();
   }, []);
 
   async function fetchSpotlights() {
     try {
-      const response = await fetch('/api/member-spotlights');
+      const response = await fetch(`${baseUrl}/api/member-spotlights`);
       if (!response.ok) throw new Error('Failed to fetch spotlights');
       const data = await response.json();
       setSpotlights(data);
@@ -34,7 +39,7 @@ export function useMemberSpotlights(): UseMemberSpotlightsReturn {
 
   async function createSpotlight(spotlight: Omit<MemberSpotlight, 'id'>) {
     try {
-      const response = await fetch('/api/member-spotlights', {
+      const response = await fetch(`${baseUrl}/api/member-spotlights`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +59,7 @@ export function useMemberSpotlights(): UseMemberSpotlightsReturn {
 
   async function updateSpotlight(id: string, spotlight: Partial<MemberSpotlight>) {
     try {
-      const response = await fetch('/api/member-spotlights', {
+      const response = await fetch(`${baseUrl}/api/member-spotlights`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +81,7 @@ export function useMemberSpotlights(): UseMemberSpotlightsReturn {
 
   async function deleteSpotlight(id: string) {
     try {
-      const response = await fetch(`/api/member-spotlights?id=${id}`, {
+      const response = await fetch(`${baseUrl}/api/member-spotlights?id=${id}`, {
         method: 'DELETE',
       });
 
